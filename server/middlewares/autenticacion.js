@@ -7,7 +7,9 @@ let verificaToken = (req, res, next) => {
         if (err) {
             return res.status(401).send({
                 ok: false,
-                err
+                err: {
+                    message: 'Token no valido'
+                }
             });
         }
         req.usuario = decoded.usuario;
@@ -30,7 +32,24 @@ let verificaAdminRol = (req, res, next) => {
 
     next();
 }
+
+let verificaTokenUrl = (req, res, next) => {
+    let token = req.query.token;
+    jwt.verify(token, process.env.SEED, function(err, decoded) {
+        if (err) {
+            return res.status(401).send({
+                ok: false,
+                err
+            });
+        }
+        req.usuario = decoded.usuario;
+        next();
+        // decoded undefined
+    });
+
+};
 module.exports = {
     verificaToken,
-    verificaAdminRol
+    verificaAdminRol,
+    verificaTokenUrl
 }
