@@ -7,7 +7,8 @@ process.env.CADUCIDAD_TOKEN = 60 * 60 * 24 * 30;
 // CONTRASENA DEL TOKEN
 process.env.SEED = process.env.SEED || 'JAZO-TOKEN';
 
-
+// ID PARA AUTH CON GOOGLE
+process.env.CLIENT_ID = process.env.CLIENT_ID || '762295368431-gb104gc5h1n6g6g012qfpangb13dvcg5.apps.googleusercontent.com';
 // BASE DE DATOS
 let urlDB;
 if (process.env.NODE_ENV == 'dev') {
