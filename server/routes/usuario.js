@@ -4,8 +4,9 @@ const bcrypt = require('bcrypt');
 const _ = require('underscore');
 
 const Usuario = require('../models/usuario');
+const { verificaToken, verificaAdminRol } = require('../middlewares/autenticacion');
 
-app.post('/usuario', function(req, res) {
+app.post('/usuario', [verificaToken, verificaAdminRol], (req, res) => {
     let body = req.body;
     // let password = 
     let usuario = new Usuario({
@@ -17,7 +18,7 @@ app.post('/usuario', function(req, res) {
 
     usuario.save((err, usuarioDB) => {
         if (err) {
-            return res.status(400).send({
+            return res.status(500).send({
                 ok: false,
                 err
             });
@@ -30,13 +31,13 @@ app.post('/usuario', function(req, res) {
     });
 });
 
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verificaToken, verificaAdminRol], (req, res) => {
     let id = req.params.id;
     let body = _pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
 
     Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, usuarioDB) => {
         if (err) {
-            return res.status(400).send({
+            return res.status(500).send({
                 ok: false,
                 err
             });
@@ -57,7 +58,7 @@ app.put('/usuario/:id', function(req, res) {
     });
 });
 
-app.get('/usuario', function(req, res) {
+app.get('/usuario', verificaToken, (req, res) => {
     let desde = Number(req.query.desde) || 0;
     desde = Number(desde);
     let limite = Number(req.query.limite) || 5;
@@ -68,7 +69,7 @@ app.get('/usuario', function(req, res) {
         .limit(limite)
         .exec((err, usuarios) => {
             if (err) {
-                return res.status(400).send({
+                return res.status(500).send({
                     ok: false,
                     err
                 });
@@ -84,7 +85,7 @@ app.get('/usuario', function(req, res) {
         });
 });
 
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', [verificaToken, verificaAdminRol], (req, res) => {
     let id = req.params.id;
     // Usuario.findByIdAndRemove(id, (err, usuarioDB) => {
     //     if (err) {
@@ -108,7 +109,7 @@ app.delete('/usuario/:id', function(req, res) {
     // });
     Usuario.findByIdAndUpdate(id, { estado: false }, { new: true, runValidators: true }, (err, usuarioDB) => {
         if (err) {
-            return res.status(400).send({
+            return res.status(500).send({
                 ok: false,
                 err
             });
